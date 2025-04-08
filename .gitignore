@@ -5,3 +5,4 @@
 /.react-router/
 /build/
 repomix-output.md
+.env
