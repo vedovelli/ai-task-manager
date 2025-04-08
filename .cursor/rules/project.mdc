@@ -17,6 +17,12 @@ alwaysApply: true
 ## Package Installation
 -  Do **not** install Remix packages; they are incompatible with React Router 7.
 
+## Routing
+
+This project **does not** use file base routing. All routes should be declared on `routes.ts` and the correspondent route modules should be stored on `~/routes`.
+
+Route Modules should export at least one function that is the React function, which is exported by default. Other exports can be: loader, action, ErrorBoundary.
+
 ## Data Loading
 -  Prefer server-side data loading over client-side unless otherwise specified.
 -  Data loading should always occur on route modules and never on the feature components.
@@ -24,6 +30,16 @@ alwaysApply: true
 ## Import Statements
 -  Use `~` for imports instead of relative paths.
 -  Use `'react-router'` for React Router tools, not `'react-router-dom'`.
+
+## Feature Components
+
+Should be placed under `~/features` and their React function should **not** be exported by default.
+
+Example:
+
+```typescript
+export function ComponentName() {}
+```
 
 ## UI Components
 -  Use Shadcn UI for building the UI. Exclusively.
