@@ -13,7 +13,7 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 export function TaskContent() {
   return (
     <section>
-      <ScrollArea className="h-[600px] pb-4">
+      <ScrollArea className="h-[calc(100vh-150px)] pb-4">
         <div className="space-y-6">
           {/* Estimated Time Card */}
           <Card>
