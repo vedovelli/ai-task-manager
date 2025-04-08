@@ -7,13 +7,19 @@ const ROUTE_TITLES: Record<string, string> = {
   "/": "Dashboard",
   "/dashboard": "Dashboard",
   "/tasks": "Tasks",
+  "/task/new": "Nova Task",
+  "/task/edit": "Editar Task",
 };
 
 export function SiteHeader() {
   const location = useLocation();
 
   const getPageTitle = () => {
-    return ROUTE_TITLES[location.pathname] || "Documents";
+    // Check if we're on a dynamic route first
+    if (location.pathname.startsWith("/task/edit/")) {
+      return "Edit Task";
+    }
+    return ROUTE_TITLES[location.pathname] || "Not Found";
   };
 
   return (
