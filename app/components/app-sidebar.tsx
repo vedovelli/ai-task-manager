@@ -17,6 +17,7 @@ import {
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
+import { ListCheckIcon, UserIcon, UsersIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -27,7 +28,6 @@ import {
   SidebarMenuItem,
 } from "~/components/ui/sidebar";
 
-import { ListCheckIcon } from "lucide-react";
 import { NavDocuments } from "~/components/nav-documents";
 import { NavMain } from "~/components/nav-main";
 import { NavSecondary } from "~/components/nav-secondary";
@@ -44,6 +44,11 @@ const data = {
       title: "Dashboard",
       url: "/",
       icon: IconDashboard,
+    },
+    {
+      title: "Users",
+      url: "/users",
+      icon: UsersIcon,
     },
     {
       title: "Tasks",
