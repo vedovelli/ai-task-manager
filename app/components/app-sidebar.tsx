@@ -17,7 +17,7 @@ import {
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
-import { ListCheckIcon, UserIcon, UsersIcon } from "lucide-react";
+import { ListCheckIcon, UsersIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
