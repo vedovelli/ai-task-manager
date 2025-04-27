@@ -13,4 +13,5 @@ export default [
     route("task/new", "routes/task-new.tsx"),
     route("task/edit/:id", "routes/task-edit.tsx"),
   ]),
+  route("api/chat", "routes/api.chat.ts"),
 ] satisfies RouteConfig;
