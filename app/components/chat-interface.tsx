@@ -12,23 +12,57 @@ import type { loader } from "~/routes/task-new";
 
 export function ChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const fetcher = useFetcher();
   const isLoading = fetcher.state !== "idle";
   const { chatId, messages } = useLoaderData<typeof loader>();
 
-  // const scrollToBottom = () => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // };
+  // Estado local para mensagens e input
+  const [localMessages, setLocalMessages] =
+    useState<({ pending?: boolean } & ChatMessage)[]>(messages);
+  const [inputValue, setInputValue] = useState("");
 
-  // useEffect(() => {
-  //   scrollToBottom();
-  // }, [messages]);
+  useEffect(() => {
+    setLocalMessages(messages);
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [localMessages]);
+
+  // Função de envio otimista
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const value = inputValue.trim();
+    if (!value) return;
+    // Mensagem otimista
+    const optimisticMessage: ChatMessage & { pending: boolean } = {
+      id: `optimistic-${Date.now()}`,
+      content: value,
+      role: "user",
+      timestamp: new Date(),
+      pending: true,
+    };
+    setLocalMessages((prev) => [...prev, optimisticMessage]);
+    setInputValue("");
+    // Foca o input
+    inputRef.current?.focus();
+    // Envia para o backend
+    fetcher.submit(
+      { chatId: chatId ?? "", message: value },
+      { method: "POST", action: "/api/chat" }
+    );
+  }
 
   return (
     <Card className="flex flex-col h-[calc(100vh-110px)] w-full border shadow-sm pb-0 pt-0">
       <ScrollArea className="flex-1 p-4 h-96">
         <div className="space-y-4">
-          {messages.map((message) => (
+          {localMessages.map((message) => (
             <div
               key={message.id}
               className={`flex ${
@@ -92,17 +126,21 @@ export function ChatInterface() {
       </ScrollArea>
 
       <div className="p-4 border-t mt-auto">
-        <fetcher.Form action="/api/chat" method="POST" className="flex gap-2">
+        <form onSubmit={handleSubmit} className="flex gap-2">
           <input type="hidden" name="chatId" value={chatId ?? ""} />
           <Input
             name="message"
             placeholder="Descreva a tarefa..."
             className="flex-1"
+            ref={inputRef}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            autoComplete="off"
           />
           <Button type="submit" disabled={isLoading} size="icon">
             <Send className="h-4 w-4" />
           </Button>
-        </fetcher.Form>
+        </form>
       </div>
     </Card>
   );
