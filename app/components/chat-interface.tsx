@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useFetcher, useLoaderData } from "react-router";
 
 import { Avatar } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -7,13 +8,13 @@ import type { ChatMessage } from "~/features/tasks/types";
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Send } from "lucide-react";
-import { useFetcher } from "react-router";
+import type { loader } from "~/routes/task-new";
 
 export function ChatInterface() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fetcher = useFetcher();
   const isLoading = fetcher.state !== "idle";
+  const { chatId, messages } = useLoaderData<typeof loader>();
 
   // const scrollToBottom = () => {
   //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -59,7 +60,7 @@ export function ChatInterface() {
                 >
                   <p className="text-sm">{message.content}</p>
                   <p className="text-xs opacity-70 mt-1">
-                    {message.timestamp.toLocaleTimeString([], {
+                    {new Date(message.timestamp).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
@@ -92,6 +93,7 @@ export function ChatInterface() {
 
       <div className="p-4 border-t mt-auto">
         <fetcher.Form action="/api/chat" method="POST" className="flex gap-2">
+          <input type="hidden" name="chatId" value={chatId ?? ""} />
           <Input
             name="message"
             placeholder="Descreva a tarefa..."

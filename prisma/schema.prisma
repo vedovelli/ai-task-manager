@@ -29,7 +29,7 @@ model Post {
 }
 
 model Chat {
-  id        Int     @id @default(autoincrement())
+  id       String   @id @default(uuid())
   title     String?
   content   String
   created_at DateTime @default(now())
@@ -57,7 +57,7 @@ model Task {
 
   // Relação 1:1 obrigatória com Chat
   chat                      Chat     @relation(fields: [chat_id], references: [id])
-  chat_id                   Int      @unique
+  chat_id                   String      @unique
 
   @@map("tasks")
 }
