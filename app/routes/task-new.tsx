@@ -1,4 +1,4 @@
-import type { ChatMessage } from "~/features/tasks/types";
+import type { ChatMessage } from "~/generated/prisma";
 import type { Route } from "./+types/task-new";
 import { TasksChatbot } from "~/features/tasks/tasks-chatbot";
 import prisma from "prisma/prisma";
@@ -15,13 +15,16 @@ export async function loader({ request }: Route.LoaderArgs) {
       where: {
         id: chatId,
       },
+      include: {
+        messages: true,
+      },
     });
 
     if (!chat) {
       return redirect("/task/new");
     }
 
-    messages = JSON.parse(chat?.content ?? "");
+    messages = chat.messages;
   }
 
   return {
