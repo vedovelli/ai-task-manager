@@ -4,7 +4,7 @@ import { useFetcher, useLoaderData } from "react-router";
 import { Avatar } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
-import type { ChatMessage } from "~/features/tasks/types";
+import type { ChatMessage } from "~/generated/prisma";
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Send } from "lucide-react";
@@ -34,24 +34,31 @@ export function ChatInterface() {
     scrollToBottom();
   }, [localMessages]);
 
-  // Função de envio otimista
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     const value = inputValue.trim();
+
     if (!value) return;
-    // Mensagem otimista
+
+    const now = Date.now();
+    const date = new Date();
+
     const optimisticMessage: ChatMessage & { pending: boolean } = {
-      id: `optimistic-${Date.now()}`,
+      chat_id: `optimistic-${now}`,
+      id: `optimistic-${now}`,
       content: value,
       role: "user",
-      timestamp: new Date(),
+      created_at: date,
+      updated_at: date,
       pending: true,
     };
+
     setLocalMessages((prev) => [...prev, optimisticMessage]);
     setInputValue("");
-    // Foca o input
+
     inputRef.current?.focus();
-    // Envia para o backend
+
     fetcher.submit(
       { chatId: chatId ?? "", message: value },
       { method: "POST", action: "/api/chat" }
@@ -127,7 +134,6 @@ export function ChatInterface() {
 
       <div className="p-4 border-t mt-auto">
         <form onSubmit={handleSubmit} className="flex gap-2">
-          <input type="hidden" name="chatId" value={chatId ?? ""} />
           <Input
             name="message"
             placeholder="Descreva a tarefa..."
