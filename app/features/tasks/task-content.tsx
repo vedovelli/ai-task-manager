@@ -9,19 +9,43 @@ import {
 
 import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
+import type { loader } from "~/routes/task-new";
+import { useLoaderData } from "react-router";
 
 export function TaskContent() {
+  const { task } = useLoaderData<typeof loader>();
+
+  if (!task.title) {
+    return null;
+  }
+
   return (
     <section>
       <ScrollArea className="h-[calc(100vh-150px)] pb-4">
         <div className="space-y-6">
+          {/* Title Card */}
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-2">
+              <Timer className="h-5 w-5" />
+              <CardTitle>Nome</CardTitle>
+            </CardHeader>
+            <CardContent>{task.title}</CardContent>
+          </Card>
           {/* Estimated Time Card */}
           <Card>
             <CardHeader className="flex flex-row items-center gap-2">
               <Timer className="h-5 w-5" />
-              <CardTitle>Estimated Time</CardTitle>
+              <CardTitle>Descrição</CardTitle>
             </CardHeader>
-            <CardContent>2 days</CardContent>
+            <CardContent>{task.description}</CardContent>
+          </Card>
+          {/* Estimated Time Card */}
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-2">
+              <Timer className="h-5 w-5" />
+              <CardTitle>Tempo Estimado</CardTitle>
+            </CardHeader>
+            <CardContent>{task.estimated_time}</CardContent>
           </Card>
 
           {/* Steps Card */}
@@ -32,11 +56,9 @@ export function TaskContent() {
             </CardHeader>
             <CardContent>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Create a form component using React</li>
-                <li>Add field validation using a suitable library</li>
-                <li>Connect backend for user authentication</li>
-                <li>Persist sessions using SQLite</li>
-                <li>Test full login and logout flow</li>
+                {task.steps.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
               </ul>
             </CardContent>
           </Card>
@@ -45,14 +67,13 @@ export function TaskContent() {
           <Card>
             <CardHeader className="flex flex-row items-center gap-2">
               <TestTube2 className="h-5 w-5" />
-              <CardTitle>Suggested Tests</CardTitle>
+              <CardTitle>Testes Sugeridos</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="list-disc pl-6 space-y-2">
-                <li>it('should render login form correctly')</li>
-                <li>it('should validate input fields')</li>
-                <li>it('should authenticate valid credentials')</li>
-                <li>it('should prevent access with invalid credentials')</li>
+                {task.suggested_tests.map((test) => (
+                  <li key={test}>{test}</li>
+                ))}
               </ul>
             </CardContent>
           </Card>
@@ -61,14 +82,13 @@ export function TaskContent() {
           <Card>
             <CardHeader className="flex flex-row items-center gap-2">
               <CheckSquare className="h-5 w-5" />
-              <CardTitle>Acceptance Criteria</CardTitle>
+              <CardTitle>Critérios de Aceitação</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Login form displays properly with required fields</li>
-                <li>Invalid input is correctly flagged</li>
-                <li>Valid users can log in and maintain a session</li>
-                <li>Users are redirected upon login and logout</li>
+                {task.acceptance_criteria.map((criteria) => (
+                  <li key={criteria}>{criteria}</li>
+                ))}
               </ul>
             </CardContent>
           </Card>
@@ -77,12 +97,9 @@ export function TaskContent() {
           <Card>
             <CardHeader className="flex flex-row items-center gap-2">
               <Lightbulb className="h-5 w-5" />
-              <CardTitle>Implementation Suggestion</CardTitle>
+              <CardTitle>Sugestão de Implementação</CardTitle>
             </CardHeader>
-            <CardContent>
-              Use React Hook Form for input validation, Prisma ORM for managing
-              user data, and configure protected routes using React Router 7.
-            </CardContent>
+            <CardContent>{task.implementation_suggestion}</CardContent>
           </Card>
         </div>
       </ScrollArea>

@@ -13,10 +13,12 @@ Evite sugerir a instalação de qualquer uma dessas dependências. Elas já est�
 Por favor, refine a seguinte descrição de tarefa e retorne um JSON com: título, descrição, etapas, tempo estimado e sugestão de implementação.
 Sempre entregue os resultados em português brasileiro (pt_BR), independentemente do idioma da mensagem do usuário.
 
-Três pontos extremamente importantes:
-1. Em nenhuma circunstância utilize \`\`\`json em sua resposta.
-2. Caso a mensagem de usuário não possa gerar uma tarefa válida, retorne um JSON vazio, porém válido ("{}")
-3. Caso uma conversa já possua uma mensagem com role = assistant contendo um JSON válido, use-a para compor sua resposta, pois pode ser que o usuário queira expandir sua sugestão inicial.
+Pontos extremamente importantes:
+- Em nenhuma circunstância utilize \`\`\`json em sua resposta.
+- Caso a mensagem de usuário não possa gerar uma tarefa válida, retorne um JSON vazio, porém válido ("{}")
+- Caso uma conversa já possua uma mensagem com role = assistant contendo um JSON válido, use-a para compor sua resposta, pois pode ser que o usuário queira expandir sua sugestão inicial.
+- Quando usuário solicitar alteração na tarefa refinada, faça a alteração de forma cirúrgica, ou seja, caso peça para remover um dos testes, remova e mantenha os demais no lugar.
+
 
 Saída JSON esperada:
 {
@@ -56,6 +58,8 @@ export async function getChatCompletions(
     role: ChatMessageRole.system,
     content: SYSTEM_PROMPT,
   };
+
+  console.log([systemMessage, ...messages]);
 
   const completion = await client.chat.completions.create({
     model: "gpt-4o",
