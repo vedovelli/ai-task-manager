@@ -1,46 +1,35 @@
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { useFetcher, useLoaderData } from "react-router";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
+import type { loader } from "~/routes/task-edit";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 export function TaskForm() {
+  const { task } = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
   // Helper function to convert array to string
   const arrayToString = (arr: string[]) => arr.join("\n");
 
-  // Sample data from JSON
-  const sampleSteps = [
-    "Criar um componente de formulário usando React",
-    "Adicionar validação de campos usando uma biblioteca adequada",
-    "Conectar backend para autenticação de usuários",
-    "Persistir sessões usando SQLite",
-    "Testar fluxo completo de login e logout",
-  ];
-
-  const sampleTests = [
-    "it('deve renderizar o formulário de login corretamente')",
-    "it('deve validar os campos de entrada')",
-    "it('deve autenticar credenciais válidas')",
-    "it('deve impedir acesso com credenciais inválidas')",
-  ];
-
-  const sampleCriteria = [
-    "Formulário de login exibe corretamente com campos obrigatórios",
-    "Entrada inválida é sinalizada corretamente",
-    "Usuários válidos podem fazer login e manter uma sessão",
-    "Usuários são redirecionados após login e logout",
-  ];
+  useEffect(() => {
+    if (fetcher.state === "idle") {
+      if (fetcher.data?.success) {
+        toast.success("Task atualizada com sucesso");
+      } else {
+        toast.error("Falha ao atualizar a task");
+      }
+    }
+  }, [fetcher.state, fetcher.data]);
 
   return (
-    <form className="space-y-6 p-6">
+    <fetcher.Form method="POST" className="space-y-6 p-6">
       {/* Título */}
       <div className="space-y-2">
         <Label htmlFor="title">Título</Label>
-        <Input
-          id="title"
-          defaultValue="Formulário de Login Seguro com Autenticação"
-        />
+        <Input id="title" name="title" defaultValue={task.title} />
       </div>
       {/* Descrição */}
       <div className="space-y-2">
@@ -48,14 +37,19 @@ export function TaskForm() {
         <Textarea
           className="h-36"
           id="description"
-          defaultValue="Implementar um formulário de login moderno com validação de campos, autenticação baseada em sessão e feedback de erro em tempo real."
+          name="description"
+          defaultValue={task.description}
         />
       </div>
 
       {/* Tempo Estimado */}
       <div className="space-y-2">
         <Label htmlFor="estimatedTime">Tempo Estimado</Label>
-        <Input id="estimatedTime" defaultValue="2 dias" />
+        <Input
+          id="estimatedTime"
+          name="estimated_time"
+          defaultValue={task.estimated_time}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-6">
@@ -65,8 +59,9 @@ export function TaskForm() {
           <Textarea
             className="h-36"
             id="steps"
+            name="steps"
             rows={6}
-            defaultValue={arrayToString(sampleSteps)}
+            defaultValue={arrayToString(JSON.parse(task.steps ?? ""))}
           />
         </div>
 
@@ -76,8 +71,9 @@ export function TaskForm() {
           <Textarea
             className="h-36"
             id="suggestedTests"
+            name="suggested_tests"
             rows={5}
-            defaultValue={arrayToString(sampleTests)}
+            defaultValue={arrayToString(JSON.parse(task.suggested_tests ?? ""))}
           />
         </div>
       </div>
@@ -89,8 +85,11 @@ export function TaskForm() {
           <Textarea
             className="h-36"
             id="acceptanceCriteria"
+            name="acceptance_criteria"
             rows={5}
-            defaultValue={arrayToString(sampleCriteria)}
+            defaultValue={arrayToString(
+              JSON.parse(task.acceptance_criteria ?? "")
+            )}
           />
         </div>
 
@@ -102,14 +101,18 @@ export function TaskForm() {
           <Textarea
             className="h-36"
             id="implementationSuggestion"
-            defaultValue="Utilizar React Hook Form para validação de entrada, Prisma ORM para gerenciar dados do usuário e configurar rotas protegidas usando React Router 7."
+            name="implementation_suggestion"
+            defaultValue={task.implementation_suggestion ?? ""}
           />
         </div>
       </div>
 
       <div className="flex justify-end">
-        <Button type="submit">Salvar Tarefa</Button>
+        <input type="hidden" name="task_id" value={task.id} />
+        <Button type="submit" disabled={fetcher.state !== "idle"}>
+          Salvar Tarefa
+        </Button>
       </div>
-    </form>
+    </fetcher.Form>
   );
 }
