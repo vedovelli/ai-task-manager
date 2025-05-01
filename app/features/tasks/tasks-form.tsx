@@ -15,7 +15,7 @@ export function TaskForm() {
   const arrayToString = (arr: string[]) => arr.join("\n");
 
   useEffect(() => {
-    if (fetcher.state === "idle") {
+    if (fetcher.state === "idle" && fetcher.data) {
       if (fetcher.data?.success) {
         toast.success("Task atualizada com sucesso");
       } else {

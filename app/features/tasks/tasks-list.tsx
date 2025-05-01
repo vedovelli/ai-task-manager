@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from "react-router";
+import { Link, useFetcher, useLoaderData } from "react-router";
 import { MessageCircle, Pencil, Trash2 } from "lucide-react";
 import {
   Table,
@@ -14,9 +14,10 @@ import type { loader } from "~/routes/tasks";
 
 export function TasksList() {
   const { tasks } = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
 
   return (
-    <div className=" p-6">
+    <fetcher.Form method="POST" className=" p-6">
       <Table>
         <TableHeader>
           <TableRow>
@@ -61,11 +62,13 @@ export function TasksList() {
                     </Link>
                   </Button>
                   <Button
+                    type="submit"
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive hover:text-destructive"
                     title="Delete task"
                   >
+                    <input type="hidden" name="task_id" value={task.id} />
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -74,6 +77,6 @@ export function TasksList() {
           ))}
         </TableBody>
       </Table>
-    </div>
+    </fetcher.Form>
   );
 }
