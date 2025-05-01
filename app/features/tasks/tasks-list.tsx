@@ -28,7 +28,14 @@ export function TasksList() {
         <TableBody>
           {tasks.map((task) => (
             <TableRow key={task.id}>
-              <TableCell className="font-medium">{task.title}</TableCell>
+              <TableCell className="font-medium">
+                <Link
+                  to={`/task/view/${task.id}`}
+                  className="decoration-dotted underline underline-offset-4"
+                >
+                  {task.title}
+                </Link>
+              </TableCell>
               <TableCell>{task.estimated_time}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">

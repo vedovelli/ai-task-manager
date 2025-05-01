@@ -6,7 +6,7 @@ import {
   TestTube2,
   Timer,
 } from "lucide-react";
-import { useFetcher, useLoaderData } from "react-router";
+import { Link, useFetcher, useLoaderData } from "react-router";
 
 import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -104,9 +104,16 @@ export function TaskContent() {
           </Card>
         </div>
       </ScrollArea>
-      <fetcher.Form method="POST" className="flex justify-end">
+      <fetcher.Form method="POST" className="flex justify-between">
         <input type="hidden" name="message_id" value={message_id} />
         <input type="hidden" name="task_id" value={task_id} />
+        {task_id ? (
+          <Button type="button">
+            <Link to={`/task/view/${task_id}`}>Detalhes da Tarefa</Link>
+          </Button>
+        ) : (
+          <div>&nbsp;</div>
+        )}
         <Button type="submit" disabled={fetcher.state !== "idle"}>
           Salvar Task
         </Button>
