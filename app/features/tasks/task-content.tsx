@@ -6,14 +6,15 @@ import {
   TestTube2,
   Timer,
 } from "lucide-react";
+import { useFetcher, useLoaderData } from "react-router";
 
 import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import type { loader } from "~/routes/task-new";
-import { useLoaderData } from "react-router";
 
 export function TaskContent() {
-  const { task } = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
+  const { task, message_id, task_id } = useLoaderData<typeof loader>();
 
   if (!task.title) {
     return null;
@@ -103,9 +104,13 @@ export function TaskContent() {
           </Card>
         </div>
       </ScrollArea>
-      <div className="flex justify-end">
-        <Button>Salvar Task</Button>
-      </div>
+      <fetcher.Form method="POST" className="flex justify-end">
+        <input type="hidden" name="message_id" value={message_id} />
+        <input type="hidden" name="task_id" value={task_id} />
+        <Button type="submit" disabled={fetcher.state !== "idle"}>
+          Salvar Task
+        </Button>
+      </fetcher.Form>
     </section>
   );
 }
