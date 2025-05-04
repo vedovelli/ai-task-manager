@@ -50,8 +50,6 @@ model Task {
   implementation_suggestion String?
   acceptance_criteria       String?
   suggested_tests           String?
-  content                   String?
-  chat_history              String?
   created_at                DateTime @default(now())
   updated_at                DateTime @updatedAt
 

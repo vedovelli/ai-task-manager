@@ -2,7 +2,7 @@ import { ChatMessageRole } from "~/generated/prisma";
 import OpenAI from "openai";
 import prisma from "prisma/prisma";
 
-const client = new OpenAI({
+export const client = new OpenAI({
   apiKey: process.env["OPENAI_KEY"],
 });
 
@@ -36,16 +36,16 @@ Saída JSON esperada:
     "Primeiro critério",
     "Segundo critério",
     "Terceiro critério",
-    "Quarto critério",
+    "Quarto critério"
   ],
   "suggested_tests": [
     "it('primeiro teste')",
     "it('segundo teste')",
     "it('terceiro teste')",
-    "it('quarto teste')",
+    "it('quarto teste')"
   ],
   "estimated_time": "2 dias",
-  "implementation_suggestion": "Use React Hook Form para validação, Prisma ORM para gerenciamento de usuários e configure rotas protegidas com React Router 7.",
+  "implementation_suggestion": "Use React Hook Form para validação, Prisma ORM para gerenciamento de usuários e configure rotas protegidas com React Router 7."
 }
 `;
 

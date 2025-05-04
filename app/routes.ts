@@ -10,7 +10,6 @@ export default [
     index("routes/dashboard.tsx"),
     route("tasks", "routes/tasks.tsx"),
     route("chats", "routes/chats.tsx"),
-    route("users", "routes/users.tsx"),
     route("task/new", "routes/task-new.tsx"),
     route("task/edit/:id", "routes/task-edit.tsx"),
     route("task/view/:id", "routes/task-view.tsx"),

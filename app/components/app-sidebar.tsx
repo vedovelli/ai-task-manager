@@ -28,11 +28,6 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Users",
-      url: "/users",
-      icon: UsersIcon,
-    },
-    {
       title: "Tasks",
       url: "/tasks",
       icon: ListCheckIcon,
