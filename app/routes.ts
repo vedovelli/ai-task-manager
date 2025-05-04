@@ -15,4 +15,5 @@ export default [
     route("task/view/:id", "routes/task-view.tsx"),
   ]),
   route("api/chat", "routes/api.chat.ts"),
+  route("copilotkit", "routes/copilotkit.ts"),
 ] satisfies RouteConfig;
