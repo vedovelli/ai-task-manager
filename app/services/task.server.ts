@@ -3,6 +3,7 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { z } from "zod";
 import { client } from "./chat.server";
 import prisma from "prisma/prisma";
+import { cache } from "./cache";
 
 export const TaskInputSchema = z.object({
   title: z.string().nullable().optional(),
@@ -15,6 +16,62 @@ export const TaskInputSchema = z.object({
 });
 
 export type TaskData = z.infer<typeof TaskInputSchema>;
+
+export type SimilarTask = {
+  id: string;
+  title: string;
+  description: string | null;
+  estimated_time: string | null;
+  similarity_score: number;
+  chunk_content: string;
+};
+
+export async function findSimilarTasks(
+  title: string,
+  limit: number = 3,
+  cutOff: number = 0.45
+) {
+  const cachedSimilarTasks = await cache.get(title);
+
+  if (cachedSimilarTasks) {
+    return JSON.parse(cachedSimilarTasks);
+  }
+
+  try {
+    const response = await client.embeddings.create({
+      model: "text-embedding-3-large",
+      input: title,
+    });
+    const queryEmbedding = response.data[0].embedding;
+
+    validateEmbedding(queryEmbedding);
+
+    const similarTasks = await prisma.$queryRaw<SimilarTask[]>`
+        SELECT 
+          t.id,
+          t.title,
+          t.description,
+          t.estimated_time,
+          e.chunk_content,
+          (1 - vector_distance_cos(e.embedding, vector32(${JSON.stringify(
+            queryEmbedding
+          )}))) as similarity_score
+        FROM task_embeddings e
+        JOIN tasks t ON t.id = e.task_id
+        WHERE t.title != ${title}
+        AND similarity_score > ${cutOff}
+        ORDER BY similarity_score DESC
+        LIMIT ${limit}
+      `;
+
+    await cache.set(title, JSON.stringify(similarTasks));
+
+    return similarTasks;
+  } catch (error) {
+    console.error("Error finding similar tasks:", error);
+    throw new Error("Failed to find similar tasks");
+  }
+}
 
 export async function storeTaskAsEmbeddings(
   taskId: string,
