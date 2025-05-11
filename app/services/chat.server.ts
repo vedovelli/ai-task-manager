@@ -3,7 +3,7 @@ import OpenAI from "openai";
 import prisma from "prisma/prisma";
 
 export const client = new OpenAI({
-  apiKey: process.env["OPENAI_KEY"],
+  apiKey: process.env["OPENAI_API_KEY"],
 });
 
 const SYSTEM_PROMPT = `
