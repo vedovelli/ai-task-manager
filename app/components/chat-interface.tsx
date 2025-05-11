@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useFetcher, useLoaderData } from "react-router";
+import { useFetcher, useLoaderData, useSearchParams } from "react-router";
 
 import { Avatar } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -15,7 +15,9 @@ export function ChatInterface() {
   const inputRef = useRef<HTMLInputElement>(null);
   const fetcher = useFetcher();
   const isLoading = fetcher.state !== "idle";
-  const { chatId, messages } = useLoaderData<typeof loader>();
+  const [params] = useSearchParams();
+  const { messages } = useLoaderData<typeof loader>();
+  const chatId = params.get("chat");
 
   // Estado local para mensagens e input
   const [localMessages, setLocalMessages] =

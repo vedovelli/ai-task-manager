@@ -38,7 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <CopilotKit runtimeUrl="http://localhost:5173/copilotkit">
+        <CopilotKit runtimeUrl="/copilotkit">
           <CopilotSidebar
             labels={{
               title: "Assitente de Tarefas",

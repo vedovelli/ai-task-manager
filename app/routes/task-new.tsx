@@ -2,7 +2,7 @@ import { ChatMessageRole, type ChatMessage } from "~/generated/prisma";
 import type { Route } from "./+types/task-new";
 import { TasksChatbot } from "~/features/tasks/tasks-chatbot";
 import prisma from "prisma/prisma";
-import { redirect } from "react-router";
+import { redirect, useSearchParams } from "react-router";
 import { storeTaskAsEmbeddings } from "~/services/task.server";
 
 type Task = {
@@ -106,7 +106,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 
   return {
-    chatId,
     messages,
     message_id,
     task_id,
