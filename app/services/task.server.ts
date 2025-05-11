@@ -4,6 +4,8 @@ import { z } from "zod";
 import { client } from "./chat.server";
 import prisma from "prisma/prisma";
 import { cache } from "./cache";
+import type { SimilarTask } from "~/features/tasks/types";
+import { prepareListData } from "~/features/tasks/util";
 
 export const TaskInputSchema = z.object({
   title: z.string().nullable().optional(),
@@ -16,15 +18,6 @@ export const TaskInputSchema = z.object({
 });
 
 export type TaskData = z.infer<typeof TaskInputSchema>;
-
-export type SimilarTask = {
-  id: string;
-  title: string;
-  description: string | null;
-  estimated_time: string | null;
-  similarity_score: number;
-  chunk_content: string;
-};
 
 export async function findSimilarTasks(
   title: string,
@@ -193,4 +186,56 @@ async function createEmbeddingsFromDocuments(
       };
     })
   );
+}
+
+export async function deleteTask(formData: FormData) {
+  await prisma.task.delete({
+    where: {
+      id: formData.get("task_id") as string,
+    },
+  });
+}
+
+export async function getTasks() {
+  return await prisma.task.findMany({
+    include: {
+      chat_message: true,
+    },
+  });
+}
+
+export async function getTask(taskId: string) {
+  return await prisma.task.findUnique({
+    where: {
+      id: taskId,
+    },
+  });
+}
+
+export async function updateTask(task_id: string, formData: FormData) {
+  const taskData = {
+    chat_message_id: null,
+    title: formData.get("title") as string,
+    description: formData.get("description") as string,
+    estimated_time: formData.get("estimated_time") as string,
+    steps: prepareListData(formData.get("steps") as string),
+    suggested_tests: prepareListData(formData.get("suggested_tests") as string),
+    acceptance_criteria: prepareListData(
+      formData.get("acceptance_criteria") as string
+    ),
+    implementation_suggestion: formData.get(
+      "implementation_suggestion"
+    ) as string,
+  };
+
+  await prisma.task.update({
+    where: {
+      id: task_id,
+    },
+    data: taskData,
+  });
+
+  await storeTaskAsEmbeddings(task_id, taskData);
+
+  return true;
 }

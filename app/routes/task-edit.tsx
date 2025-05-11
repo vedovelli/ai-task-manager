@@ -1,11 +1,8 @@
+import { getTask, updateTask } from "~/services/task.server";
+
 import type { Route } from "./+types/task-edit";
 import { TaskForm } from "~/features/tasks/tasks-form";
-import prisma from "prisma/prisma";
 import { redirect } from "react-router";
-import { storeTaskAsEmbeddings } from "~/services/task.server";
-
-const prepareListData = (str: string) =>
-  JSON.stringify(str ? str.split("\n").filter(Boolean) : []);
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -14,31 +11,7 @@ export async function action({ request }: Route.ActionArgs) {
   formData.delete("task_id");
 
   try {
-    const taskData = {
-      chat_message_id: null,
-      title: formData.get("title") as string,
-      description: formData.get("description") as string,
-      estimated_time: formData.get("estimated_time") as string,
-      steps: prepareListData(formData.get("steps") as string),
-      suggested_tests: prepareListData(
-        formData.get("suggested_tests") as string
-      ),
-      acceptance_criteria: prepareListData(
-        formData.get("acceptance_criteria") as string
-      ),
-      implementation_suggestion: formData.get(
-        "implementation_suggestion"
-      ) as string,
-    };
-
-    await prisma.task.update({
-      where: {
-        id: task_id,
-      },
-      data: taskData,
-    });
-
-    await storeTaskAsEmbeddings(task_id, taskData);
+    await updateTask(task_id, formData);
 
     return { success: true };
   } catch (error) {
@@ -49,11 +22,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const task = await prisma.task.findUnique({
-    where: {
-      id: params.id,
-    },
-  });
+  const task = await getTask(params.id as string);
 
   if (!task) {
     return redirect("/tasks");
